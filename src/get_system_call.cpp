@@ -63,12 +63,26 @@ void SystemCall_t :: Perform_system_call(){
 
 	if ( stream ) {
 		if ( fgets(buffer, sizeof(buffer), stream) != NULL){
+//
+//			popen buffers always end with \n
+//			--------------------------------
+			char* auxstr;
+			auxstr = strstr(buffer,"\n");
+			auxstr[0] = '\0';
+
 			no_of_outputLines = 1;
 			currentLine = new SystemOutputLine_t(buffer);
 			head = currentLine;
 		}
 
 		while ( fgets(buffer, sizeof(buffer), stream) != NULL){
+//
+//			popen buffers always end with \n
+//			--------------------------------
+			char* auxstr;
+			auxstr = strstr(buffer,"\n");
+			auxstr[0] = '\0';
+
 			no_of_outputLines++;
 			currentLine->next = new SystemOutputLine_t(buffer);
 			currentLine = currentLine->next;

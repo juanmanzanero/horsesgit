@@ -59,7 +59,8 @@ INCLUDE=-I$(INCDIR)
 OBJS= main.o \
       gitcommand.o \
       get_system_call.o \
-      commit_state.o
+      commit_state.o \
+      string_utils.o
 
 BUILD_OBJS = $(addprefix $(BUILDDIR)/, $(OBJS))
 

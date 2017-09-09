@@ -17,44 +17,10 @@
 
 */
 
-#ifndef __GET_SYSTEM_CALL_H__
-#define __GET_SYSTEM_CALL_H__
+#ifndef __STRING_UTILS_H__
+#define __STRING_UTILS_H__
+
+void string_trim(char*);
 
 
-const int MAX_BUFFER_SIZE = 2048;
-const int MAX_MESSAGE_SIZE = 2048;
-
-class SystemCall_t;
-
-class SystemOutputLine_t{
-	friend class SystemCall_t;
-
-	private:
-		char msg[MAX_BUFFER_SIZE];
-		SystemOutputLine_t  *next;
-	public:
-		SystemOutputLine_t(char *msg_in);
-		void Print() const;	
-
-};
-
-class SystemCall_t {
-	private:
-		SystemOutputLine_t *head;
-		void Perform_system_call();
-		void Print_message() const;
-	public:
-		int no_of_outputLines;
-		char message[MAX_MESSAGE_SIZE];
-		SystemCall_t(const char *command);
-		char* Get_output_line(const int) const;	
-		void Print_output() const;
-};
-
-
-void get_command_line();
-
-
-#endif  /*  __GET_SYSTEM_CALL_H__ */
-
-
+#endif /*  __STRING_UTILS_H__   */

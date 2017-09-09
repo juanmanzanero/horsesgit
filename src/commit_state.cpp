@@ -18,12 +18,17 @@
 */
 
 #include "commit_state.h"
+#include "string_utils.h"
 
 CommitState_t :: CommitState_t(){
 
 	SystemCall_t status( GIT_STATUS_MSG );
 
 	branch = getBranch(status);
+
+#ifdef _DEBUG	
+	cout << "The branch is " << branch << "." << endl;
+#endif
 }
 
 char* CommitState_t :: getBranch(const SystemCall_t& status){
@@ -38,5 +43,7 @@ char* CommitState_t :: getBranch(const SystemCall_t& status){
 			strncpy(branchname, line + on_branch_size, strlen(line)+1-on_branch_size);
 		}
 	}
+
+/*	Remove all trailing whitespaces     */
 	return branchname;
 }
