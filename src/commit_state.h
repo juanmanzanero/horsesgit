@@ -17,44 +17,33 @@
 
 */
 
-#ifndef __GET_SYSTEM_CALL_H__
-#define __GET_SYSTEM_CALL_H__
+#ifndef __COMMIT_STATE_H__
+#define __COMMIT_STATE_H__
 
+#include <iostream>
+#include <stdio.h>
+#include <string.h>
+#include "get_system_call.h"
+#include "git_message_library.h"
 
-const int MAX_BUFFER_SIZE = 2048;
-const int MAX_MESSAGE_SIZE = 2048;
+using namespace std;
 
-class SystemCall_t;
+const int MAX_COMMITSTATE_LEN = 2048;
 
-class SystemOutputLine_t{
-	friend class SystemCall_t;
+class CommitState_t{
 
 	private:
-		char msg[MAX_BUFFER_SIZE];
-		SystemOutputLine_t  *next;
+		//File_t *changed_files;	
+		int no_of_newfiles;
+		int no_of_modifiedfiles;
+		char* getBranch(const SystemCall_t&);
+
 	public:
-		SystemOutputLine_t(char *msg_in);
-		void Print() const;	
+		CommitState_t();
+		char *branch;
+
 
 };
 
-class SystemCall_t {
-	private:
-		SystemOutputLine_t *head;
-		void Perform_system_call();
-		void Print_message() const;
-		void Print_output() const;
-	public:
-		int no_of_outputLines;
-		char message[MAX_MESSAGE_SIZE];
-		SystemCall_t(const char *command);
-		char* Get_output_line(const int) const;	
-};
 
-
-void get_command_line();
-
-
-#endif  /*  __GET_SYSTEM_CALL_H__ */
-
-
+#endif 	/*  __COMMIT_STATE_H__  */

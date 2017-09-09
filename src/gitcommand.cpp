@@ -23,8 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "gitcommand.h"
-#include "get_system_call.h"
-#include "git_message_library.h"
+#include "commit_state.h"
 
 using namespace std;
 
@@ -39,14 +38,11 @@ int git_command(int argc, const char* argv[]){
 			strcat(message, " ");
 			strcat(message, argv[i]);
 		}
-		cout << message << endl;
 		return system(message);
 	}
 
-	get_command_line();
-
-	char message[] = GIT_STATUS_MSG;
-	SystemCall_t Status(message);
+/*	Otherwise, get the status of the code     */
+	CommitState_t commitState;
 }
 
 

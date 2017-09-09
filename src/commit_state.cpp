@@ -17,44 +17,26 @@
 
 */
 
-#ifndef __GET_SYSTEM_CALL_H__
-#define __GET_SYSTEM_CALL_H__
+#include "commit_state.h"
 
+CommitState_t :: CommitState_t(){
 
-const int MAX_BUFFER_SIZE = 2048;
-const int MAX_MESSAGE_SIZE = 2048;
+	SystemCall_t status( GIT_STATUS_MSG );
 
-class SystemCall_t;
+	branch = getBranch(status);
+}
 
-class SystemOutputLine_t{
-	friend class SystemCall_t;
+char* CommitState_t :: getBranch(const SystemCall_t& status){
 
-	private:
-		char msg[MAX_BUFFER_SIZE];
-		SystemOutputLine_t  *next;
-	public:
-		SystemOutputLine_t(char *msg_in);
-		void Print() const;	
-
-};
-
-class SystemCall_t {
-	private:
-		SystemOutputLine_t *head;
-		void Perform_system_call();
-		void Print_message() const;
-		void Print_output() const;
-	public:
-		int no_of_outputLines;
-		char message[MAX_MESSAGE_SIZE];
-		SystemCall_t(const char *command);
-		char* Get_output_line(const int) const;	
-};
-
-
-void get_command_line();
-
-
-#endif  /*  __GET_SYSTEM_CALL_H__ */
-
-
+	char *line;
+	char *branchname = new char[MAX_COMMITSTATE_LEN];
+	int on_branch_size = strlen("On branch ");
+	
+	for (int i = 0; i < status.no_of_outputLines; i++){
+		line = status.Get_output_line(i);	
+		if ( strstr(line,"On branch") != NULL ){
+			strncpy(branchname, line + on_branch_size, strlen(line)+1-on_branch_size);
+		}
+	}
+	return branchname;
+}

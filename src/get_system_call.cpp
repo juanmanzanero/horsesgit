@@ -23,47 +23,110 @@
 #include "get_system_call.h"
 using namespace std;
 
-
-/* 	SystemCall_t procedures 	*/
-
-SystemCall_t::SystemCall_t(char *msg_in){
-
+/****************************************\
+| 	SystemCall_t procedures 	 |
+\****************************************/
+SystemCall_t::SystemCall_t(const char *msg_in){
 //	
 //	Introuduce the requested message in this.message
 //	------------------------------------------------
 	strcpy( message, msg_in );
 //
-//	Reset no_of_messages
+//	Reset no_of_outputLines
 //	--------------------
-	no_of_messages = 0;
+	no_of_outputLines = 0;
 //
 //	Nullify the head
 //	----------------
 	head = NULL;
+
+#ifdef _DEBUG
 //
 //	Print the message
 //	-----------------
-#ifdef _DEBUG
-	print_message();
+	Print_message();
 #endif
-
+//
+//	Perform the call and get the output
+//	-----------------------------------
+	Perform_system_call();
 } 
 
-void SystemCall_t::print_message(){
+void SystemCall_t :: Perform_system_call(){
+
+	FILE *stream = popen( message , "r" );
+
+	char buffer[MAX_BUFFER_SIZE];
+	
+	SystemOutputLine_t *currentLine;
+	currentLine = head;
+
+	if ( stream ) {
+		if ( fgets(buffer, sizeof(buffer), stream) != NULL){
+			no_of_outputLines = 1;
+			currentLine = new SystemOutputLine_t(buffer);
+			head = currentLine;
+		}
+
+		while ( fgets(buffer, sizeof(buffer), stream) != NULL){
+			no_of_outputLines++;
+			currentLine->next = new SystemOutputLine_t(buffer);
+			currentLine = currentLine->next;
+		}
+	}
+
+#ifdef _DEBUG
+	cout << "Number of messages after system call \"" << message ;
+	cout <<  "\": " << no_of_outputLines << endl;
+#endif
+
+	pclose(stream);
+}
+
+char* SystemCall_t :: Get_output_line(const int i) const {
+
+	if ( i > no_of_outputLines ) return NULL;
+
+	char *output = new char[MAX_BUFFER_SIZE];
+
+	SystemOutputLine_t *currentLine;
+	currentLine = head;
+
+	for (int j = 0; j < i; j++){
+		currentLine = currentLine->next;		
+	}
+
+	strcpy( output, currentLine->msg );
+
+	return output;
+}
+
+void SystemCall_t :: Print_message() const {
 	cout << "Message introduced: " << message << endl;
 }
 
-void get_command_line(){
+void SystemCall_t :: Print_output() const {
 
-	const int MAX_BUFFER = 2048;
-	char buffer[MAX_BUFFER];
-	FILE *stream = popen("git status -uno", "r");
+	SystemOutputLine_t *currentLine;
+	currentLine = head;
 
-	if ( stream ) {
-		while ( fgets(buffer, sizeof(buffer), stream) != NULL){
-//			cout << buffer << endl;
-		}
+	for (int i = 0; i < no_of_outputLines; i++){
+		currentLine->Print();
+		currentLine = currentLine->next;
 	}
-	pclose(stream);
+}
 
+
+
+/****************************************\
+|	SystemOutputLine procedures 	 |
+\****************************************/
+SystemOutputLine_t::SystemOutputLine_t(char *msg_in){
+	strcpy(msg, msg_in); 
+	next = NULL;
+
+}
+
+void SystemOutputLine_t :: Print() const{
+	cout << msg << endl;
 }
