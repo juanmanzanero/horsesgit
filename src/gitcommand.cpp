@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "gitcommand.h"
+#include "get_system_call.h"
+#include "git_message_library.h"
 
 using namespace std;
 
@@ -40,23 +42,32 @@ int git_command(int argc, const char* argv[]){
 		cout << message << endl;
 		return system(message);
 	}
+
+	get_command_line();
+
+	char message[] = GIT_STATUS_MSG;
+	SystemCall_t Status(message);
 }
 
 
 bool IsCommitMessage(const int argc, const char* argv[]){
 
 //	Check if the arguments number is 4: git commit -m "Message"
+//	-----------------------------------------------------------
 	if ( argc != 4 ) return false;
-cout << "There are four arguments" << endl;
-
+//
 //	If does, check if the second argument is commit
+//	-----------------------------------------------
 	if ( strcmp(argv[1],"commit") ) return false;
-cout << "The second is commit" << endl;
-
+//
 // 	If does, check if the third argument is "-m"
+//	--------------------------------------------
 	if ( strcmp(argv[2], "-m") ) return false;
-cout << "The third is -m" << endl;
-
+//
 //	If does, it is a commit message
+//	-------------------------------
+#ifdef _DEBUG
+	cout << "This is a commit message" << endl;
+#endif
 	return true;
 }

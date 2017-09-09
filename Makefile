@@ -57,8 +57,8 @@ PROG=horsesgit
 INCLUDE=-I$(INCDIR)
 
 OBJS= main.o \
-      gitcommand.o
-
+      gitcommand.o \
+      get_system_call.o
 BUILD_OBJS = $(addprefix $(BUILDDIR)/, $(OBJS))
 
 # Get compiler 	-----------------------------------
@@ -114,7 +114,7 @@ run: FORCE
 ##########################################################
 #	General compilation rule
 ##########################################################
-$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp 
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.h
 	@echo "Compiling " $(basename $(notdir $<))
 	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
