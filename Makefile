@@ -1,3 +1,24 @@
+##################################################################################
+#										 #
+#    HORSES - A High-Order Spectral Element Solver				 #
+#    Copyright (C) 2017  Juan Manzanero (juan.manzanero@upm.es) 		 #
+#										 #
+#    This program is free software: you can redistribute it and/or modify 	 #
+#    it under the terms of the GNU General Public License as published by 	 #
+#    the Free Software Foundation, either version 3 of the License, or	 	 #
+#    (at your option) any later version.					 #
+#										 #
+#    This program is distributed in the hope that it will be useful,		 #
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of		 #
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the		 #
+#    GNU General Public License for more details.				 #
+#										 #
+#    You should have received a copy of the GNU General Public License		 #
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.	 #
+#										 #
+##################################################################################
+
+
 ##################################################
 # 1)	Define the compiler
 ##################################################
@@ -85,7 +106,7 @@ all: mkdirs $(BINDIR)/$(PROG)
 $(BINDIR)/$(PROG): $(BUILD_OBJS)
 	@echo ""
 	@echo "Building " $(PROG)
-	$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/$(PROG) $(BUILD_OBJS)
+	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/$(PROG) $(BUILD_OBJS)
 
 run: FORCE
 	$(BINDIR)/$(PROG)
@@ -94,9 +115,8 @@ run: FORCE
 #	General compilation rule
 ##########################################################
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp 
-	@echo ""
-	@echo "Compiling " $<
-	$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	@echo "Compiling " $(basename $(notdir $<))
+	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 ##########################################################
 #	Additional rules
