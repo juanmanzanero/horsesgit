@@ -25,6 +25,7 @@
 #include <string.h>
 #include "get_system_call.h"
 #include "git_message_library.h"
+#include "file_class.h"
 
 using namespace std;
 
@@ -33,16 +34,21 @@ const int MAX_COMMITSTATE_LEN = 2048;
 class CommitState_t{
 
 	private:
-		//File_t *changed_files;	
+		File_t *newfiles;	
+      File_t *modifiedfiles;
 		int no_of_newfiles;
 		int no_of_modifiedfiles;
 		static char* getBranch(const SystemCall_t&);
-//		void getFiles();
-		void getFileNames(const SystemCall_t&, int *no_of_modified, char (*&modified)[MAX_BUFFER_SIZE], int *no_of_new, char (*&new_files)[MAX_BUFFER_SIZE]);
+      void GetUserData();
+		void getFileNames(const SystemCall_t&, int *, char (*&)[MAX_BUFFER_SIZE], \
+                                             int *, char (*&)[MAX_BUFFER_SIZE]);
+      void Analysis(const char (*)[MAX_BUFFER_SIZE], const char(*)[MAX_BUFFER_SIZE]);
 
 	public:
 		CommitState_t();
 		char *branch;
+      char username[MAX_COMMITSTATE_LEN];
+      char useremail[MAX_COMMITSTATE_LEN];
 
 
 };

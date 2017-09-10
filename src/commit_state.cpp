@@ -20,35 +20,71 @@
 #include "commit_state.h"
 #include "git_message_library.h"
 #include "string_utils.h"
+#include "file_class.h"
 
+/**************************************************
+*     Commit State constructor                    *
+**************************************************/
 CommitState_t :: CommitState_t(){
-
+//
+// Inquire git status
+// ------------------
 	SystemCall_t status( GIT_STATUS_MSG );
-
+//
+// Extract the user information
+// ----------------------------
+   GetUserData();
+//
+// Extract the branch
+// ------------------
 	branch = getBranch(status);
-
-#ifdef _DEBUG	
-	cout << "The branch is " << branch << "." << endl;
-#endif
-
+//
+// Extract modified and new file names
+// -----------------------------------
 	char (*modified)[MAX_BUFFER_SIZE], (*new_files)[MAX_BUFFER_SIZE];
-
 	getFileNames(status, &no_of_modifiedfiles, modified, &no_of_newfiles, new_files );
+//
+// Create the file structures
+// --------------------------
+   newfiles = new File_t [no_of_newfiles] ; 
+   
+   for (int i = 0; i < no_of_newfiles; i++){
+      newfiles[i] = File_t( new_files[i], File_t :: NEWFILE ) ; 
+   }
+
+   modifiedfiles = new File_t [no_of_modifiedfiles];
+   
+   for (int i = 0; i < no_of_modifiedfiles; i++){
+      modifiedfiles[i] = File_t( modified[i], File_t :: MODIFIEDFILE ) ; 
+   }
+
 
 #ifdef _DEBUG
-	cout << "Number of new files: " << no_of_newfiles << endl;
-	cout << "Number of modified files: " << no_of_modifiedfiles << endl;
-
-	for ( int i = 0; i < no_of_newfiles;){
-		cout << "New file " << ++i << ": " << new_files[i] << endl;
-	}
-
-	for ( int i = 0; i < no_of_modifiedfiles;){
-		cout << "Modified file " << ++i << ": " << modified[i] << endl;
-	}
+   Analysis(new_files, modified);
 #endif
 }
+/**********************************************
+*     This function gets the user data        *
+**********************************************/
+void CommitState_t :: GetUserData(){
+//
+// Call git to inquire the user name
+// ---------------------------------
+   SystemCall_t userName( GIT_USERNAME ) ; 
 
+   char *line = userName.Get_output_line(0);
+   strcpy( username, line );
+
+   SystemCall_t userEmail( GIT_USEREMAIL );
+
+   line = userEmail.Get_output_line(0);
+   strcpy( useremail, line );
+  
+}
+
+/**********************************************
+*     This function gets the branch name      *
+**********************************************/
 char* CommitState_t :: getBranch(const SystemCall_t& status){
 
 	char *line;
@@ -64,7 +100,10 @@ char* CommitState_t :: getBranch(const SystemCall_t& status){
 
 	return branchname;
 }
-
+/************************************************
+*     This function gets the new and modified   *
+*  file names                                   *
+************************************************/
 void CommitState_t :: getFileNames(const SystemCall_t& status,  	   \
 				   int *no_of_modified, char (*&modified)[MAX_BUFFER_SIZE],   \
 				   int *no_of_new     , char (*&new_files)[MAX_BUFFER_SIZE]){
@@ -93,10 +132,15 @@ void CommitState_t :: getFileNames(const SystemCall_t& status,  	   \
 		if ( insideStaged ) {
 	
 			if ( strstr(line, GIT_MODIFIEDFILE_MSG ) != NULL ){
-				(*no_of_modified)++;
+
+            for (int fmt = 0; fmt < File_t :: no_of_file_formats; fmt++){
+               if ( strstr(line, File_t :: file_formats[fmt] ) != NULL) (*no_of_modified)++;
+            }
 
 			}else if ( strstr(line, GIT_NEWFILE_MSG ) != NULL ){
-				(*no_of_new)++;
+            for (int fmt = 0; fmt < File_t :: no_of_file_formats; fmt++){
+               if ( strstr(line, File_t :: file_formats[fmt] ) != NULL) (*no_of_new)++;
+            }
 		
 			}
 		}
@@ -131,14 +175,57 @@ void CommitState_t :: getFileNames(const SystemCall_t& status,  	   \
 //
 //				Current line is a modified file
 //				-------------------------------
-				strncpy(modified[currentModified++], line + strlen(GIT_MODIFIEDFILE_MSG) + 1, MAX_BUFFER_SIZE );
+            for (int fmt = 0; fmt < File_t :: no_of_file_formats; fmt++){
+               if ( strstr(line, File_t :: file_formats[fmt] ) != NULL){
+				      strncpy(modified[currentModified++], line + strlen(GIT_MODIFIEDFILE_MSG) + 1, MAX_BUFFER_SIZE );
+               }
+            }
+
 			} else if ( strstr(line, GIT_NEWFILE_MSG ) != NULL ) {
 //
 //				Current line is a new file
 //				--------------------------
-				strncpy(new_files[currentNew++], line + strlen(GIT_NEWFILE_MSG) + 1, MAX_BUFFER_SIZE );
+            for (int fmt = 0; fmt < File_t :: no_of_file_formats; fmt++){
+               if ( strstr(line, File_t :: file_formats[fmt] ) != NULL){
+				      strncpy(new_files[currentNew++], line + strlen(GIT_NEWFILE_MSG) + 1, MAX_BUFFER_SIZE );
+               }
+            }
          }
 		}
 	}
 }
 
+void CommitState_t :: Analysis(const char (*new_files)[MAX_BUFFER_SIZE], \
+                               const char (*modified)[MAX_BUFFER_SIZE])
+{
+   cout << "User name: " << username << endl;
+   cout << "User email: " << useremail << endl;
+	cout << "The branch is \"" << branch << "\"." << endl;
+
+   cout << endl;
+	cout << "Number of new files: " << no_of_newfiles << endl;
+	cout << "Number of modified files: " << no_of_modifiedfiles << endl;
+   cout << endl;
+
+	for ( int i = 0; i < no_of_newfiles; i++){
+		cout << '\t' << "* New file " << i+1 << ": \"" << new_files[i] << '\"' << endl;
+	}
+
+   cout << endl;
+	for ( int i = 0; i < no_of_modifiedfiles; i++){
+		cout << '\t' << "* Modified file " << i+1 << ": \"" << modified[i] << '\"' << endl;
+
+	}
+
+   cout << endl << endl;
+   cout << "File structures generated analysis: " << endl ;
+
+   for ( int i = 0; i < no_of_newfiles; i++ ){
+      newfiles[i].Describe();
+   }
+
+   for ( int i = 0; i < no_of_modifiedfiles; i++ ){
+      modifiedfiles[i].Describe();
+   }
+
+}

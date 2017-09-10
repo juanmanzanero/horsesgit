@@ -17,17 +17,32 @@
 
 */
 
+#ifndef __FILE_CLASS_H__
+#define __FILE_CLASS_H__
+
+const int MAX_FILE_LEN = 2048;
+
+class File_t{
+
+   public:
+      enum Filetype_t{ NEWFILE, MODIFIEDFILE };
+      const static char* file_formats[]; //= {".f90",".incf"};
+      const static int no_of_file_formats;
+
+   private:
+      char name[MAX_FILE_LEN];
+      Filetype_t filetype;
+       
+   public:
+      File_t();
+      File_t(const char*, const Filetype_t);
+      void Describe();
+      void WriteFile();
+      void WriteNewFile();
+      void WriteModifiedFile();
+
+};
 
 
-#ifndef __GIT_MESSAGE_LIBRARY_H__
-#define __GIT_MESSAGE_LIBRARY_H__
 
-#define GIT_STATUS_MSG "git status -uno"
-#define GIT_START_STAGED "Changes to be committed:"
-#define GIT_END_STAGED "Changes not staged for commit:"
-#define GIT_NEWFILE_MSG "new file:   "
-#define GIT_MODIFIEDFILE_MSG "modified:   "
-#define GIT_USERNAME "git config user.name"
-#define GIT_USEREMAIL "git config user.email"
-
-#endif 	/* __GIT_MESSAGE_LIBRARY_H__ */
+#endif /* __FILE_CLASS_H__ */

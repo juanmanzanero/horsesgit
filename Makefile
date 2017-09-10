@@ -60,7 +60,8 @@ OBJS= main.o \
       gitcommand.o \
       get_system_call.o \
       commit_state.o \
-      string_utils.o
+      string_utils.o \
+      file_class.o
 
 BUILD_OBJS = $(addprefix $(BUILDDIR)/, $(OBJS))
 
