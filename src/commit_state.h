@@ -36,7 +36,9 @@ class CommitState_t{
 		//File_t *changed_files;	
 		int no_of_newfiles;
 		int no_of_modifiedfiles;
-		char* getBranch(const SystemCall_t&);
+		static char* getBranch(const SystemCall_t&);
+//		void getFiles();
+		void getFileNames(const SystemCall_t&, int *no_of_modified, char (*&modified)[MAX_BUFFER_SIZE], int *no_of_new, char (*&new_files)[MAX_BUFFER_SIZE]);
 
 	public:
 		CommitState_t();

@@ -108,7 +108,7 @@ all: mkdirs $(BINDIR)/$(PROG)
 
 $(BINDIR)/$(PROG): $(BUILD_OBJS)
 	@echo ""
-	@echo "Building " $(PROG)
+	@echo "	* Building" $(PROG)
 	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/$(PROG) $(BUILD_OBJS)
 
 run: FORCE
@@ -118,7 +118,7 @@ run: FORCE
 #	General compilation rule
 ##########################################################
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.h
-	@echo "Compiling " $(basename $(notdir $<))
+	@echo "	* Compiling" $(basename $(notdir $<))
 	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 ##########################################################

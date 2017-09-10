@@ -18,6 +18,7 @@
 */
 
 #include "commit_state.h"
+#include "git_message_library.h"
 #include "string_utils.h"
 
 CommitState_t :: CommitState_t(){
@@ -28,6 +29,23 @@ CommitState_t :: CommitState_t(){
 
 #ifdef _DEBUG	
 	cout << "The branch is " << branch << "." << endl;
+#endif
+
+	char (*modified)[MAX_BUFFER_SIZE], (*new_files)[MAX_BUFFER_SIZE];
+
+	getFileNames(status, &no_of_modifiedfiles, modified, &no_of_newfiles, new_files );
+
+#ifdef _DEBUG
+	cout << "Number of new files: " << no_of_newfiles << endl;
+	cout << "Number of modified files: " << no_of_modifiedfiles << endl;
+
+	for ( int i = 0; i < no_of_newfiles;){
+		cout << "New file " << ++i << ": " << new_files[i] << endl;
+	}
+
+	for ( int i = 0; i < no_of_modifiedfiles;){
+		cout << "Modified file " << ++i << ": " << modified[i] << endl;
+	}
 #endif
 }
 
@@ -44,6 +62,83 @@ char* CommitState_t :: getBranch(const SystemCall_t& status){
 		}
 	}
 
-/*	Remove all trailing whitespaces     */
 	return branchname;
 }
+
+void CommitState_t :: getFileNames(const SystemCall_t& status,  	   \
+				   int *no_of_modified, char (*&modified)[MAX_BUFFER_SIZE],   \
+				   int *no_of_new     , char (*&new_files)[MAX_BUFFER_SIZE]){
+
+	*no_of_modified = 0;
+	*no_of_new = 0;
+//
+//	First loop: get how many new and modified files are staged
+// 	----------------------------------------------------------
+	char *line;
+	bool insideStaged = false;
+
+	for (int i = 0; i < status.no_of_outputLines; i++){
+		line = status.Get_output_line(i);
+
+		if ( strstr( line, GIT_START_STAGED ) != NULL ) {
+			insideStaged = true;
+			continue;
+		}
+
+		if ( strstr( line, GIT_END_STAGED ) != NULL ){
+			insideStaged = false;
+			continue;
+		}
+
+		if ( insideStaged ) {
+	
+			if ( strstr(line, GIT_MODIFIEDFILE_MSG ) != NULL ){
+				(*no_of_modified)++;
+
+			}else if ( strstr(line, GIT_NEWFILE_MSG ) != NULL ){
+				(*no_of_new)++;
+		
+			}
+		}
+	}
+//
+//	Allocate memory
+//	---------------
+	modified = new char[*no_of_modified][MAX_BUFFER_SIZE];
+	new_files = new char[*no_of_new][MAX_BUFFER_SIZE];
+//
+//	Second loop: assign the modified and new file names
+//	---------------------------------------------------
+	insideStaged = false;
+
+	int currentNew = 0;
+	int currentModified = 0;
+
+	for ( int i = 0; i < status.no_of_outputLines; i++ ){
+		line = status.Get_output_line(i);
+
+		if ( strstr( line , GIT_START_STAGED ) != NULL ) {
+			insideStaged = true;
+			continue;
+		} else if ( strstr(line, GIT_END_STAGED) != NULL ) {
+			insideStaged = false;
+			continue;
+		}
+
+		if ( insideStaged ) {
+
+			if ( strstr(line, GIT_MODIFIEDFILE_MSG ) != NULL ) {
+//
+//				Current line is a modified file
+//				-------------------------------
+				strncpy(modified[currentModified++], line + strlen(GIT_MODIFIEDFILE_MSG) + 1, MAX_BUFFER_SIZE );
+			} else if ( strstr(line, GIT_NEWFILE_MSG ) != NULL ) {
+//
+//				Current line is a new file
+//				--------------------------
+				strncpy(new_files[currentNew++], line + strlen(GIT_NEWFILE_MSG) + 1, MAX_BUFFER_SIZE );
+         }
+		}
+	}
+}
+

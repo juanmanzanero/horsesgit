@@ -23,5 +23,9 @@
 #define __GIT_MESSAGE_LIBRARY_H__
 
 #define GIT_STATUS_MSG "git status -uno"
+#define GIT_START_STAGED "Changes to be committed:"
+#define GIT_END_STAGED "Changes not staged for commit:"
+#define GIT_NEWFILE_MSG "new file:   "
+#define GIT_MODIFIEDFILE_MSG "modified:   "
 
 #endif 	/* __GIT_MESSAGE_LIBRARY_H__ */
