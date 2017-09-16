@@ -61,7 +61,9 @@ OBJS= main.o \
       get_system_call.o \
       commit_state.o \
       string_utils.o \
-      file_class.o
+      file_class.o \
+      file_content.o \
+      file_analysis.o
 
 BUILD_OBJS = $(addprefix $(BUILDDIR)/, $(OBJS))
 
@@ -109,8 +111,8 @@ all: mkdirs $(BINDIR)/$(PROG)
 
 $(BINDIR)/$(PROG): $(BUILD_OBJS)
 	@echo ""
-	@echo "	* Building" $(PROG)
-	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/$(PROG) $(BUILD_OBJS)
+	@echo "Linking" $(PROG)
+	$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -o $(BINDIR)/$(PROG) $(BUILD_OBJS)
 
 run: FORCE
 	$(BINDIR)/$(PROG)
@@ -119,8 +121,9 @@ run: FORCE
 #	General compilation rule
 ##########################################################
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp $(SRCDIR)/%.h
-	@echo "	* Compiling" $(basename $(notdir $<))
-	@$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -c $< -o $@
+	@echo ""
+	@echo $(notdir $<)
+	$(CC) $(FLAGS) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 ##########################################################
 #	Additional rules

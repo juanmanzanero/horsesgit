@@ -62,6 +62,14 @@ CommitState_t :: CommitState_t(){
 #ifdef _DEBUG
    Analysis(new_files, modified);
 #endif
+
+   for ( int i = 0; i < no_of_modifiedfiles; i++){
+      modifiedfiles[i].WriteFile();
+   }
+
+   for ( int i = 0; i < no_of_newfiles; i++){
+      newfiles[i].WriteFile();
+   }
 }
 /**********************************************
 *     This function gets the user data        *

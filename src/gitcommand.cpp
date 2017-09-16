@@ -43,6 +43,12 @@ int git_command(int argc, const char* argv[]){
 
 /*	Otherwise, get the status of the code     */
 	CommitState_t commitState;
+
+
+//
+// Return exit code
+// ----------------
+   return 0;
 }
 
 

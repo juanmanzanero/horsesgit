@@ -20,6 +20,8 @@
 
 #include <string.h>
 #include <iostream>
+#include "file_content.h"
+#include "file_analysis.h"
 #include "file_class.h"
 using namespace std;
 
@@ -73,7 +75,23 @@ void File_t :: WriteFile(){
    }
 }
 
-void File_t :: WriteNewFile(){};
+void File_t :: WriteNewFile(){
+   cout << "File " << name << " is being modified" << endl;
 
-void File_t :: WriteModifiedFile(){};
+   FileContent_t  fileContent( name );
+
+   int *tagPositions[NUMBER_OF_TAGS];
+
+   for ( int i = 0; i < NUMBER_OF_TAGS; i++ ){
+      
+      tagPositions[i] = checkIfTagIsPresent( &fileContent, FileTag_t(i) );
+      cout << tagPositions[i] << endl;
+   }
+   
+
+}
+
+void File_t :: WriteModifiedFile(){
+   cout << "File " << name << " is being modified" << endl;
+}
       
