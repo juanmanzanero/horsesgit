@@ -37,8 +37,8 @@ class File_t{
       File_t();
       File_t(const char*, const Filetype_t);
       void Describe();
-      void WriteFile();
-      void WriteNewFile();
+      void WriteFile(const char*, const char*);
+      void WriteNewFile(const char*, const char*);
       void WriteModifiedFile();
 
 };

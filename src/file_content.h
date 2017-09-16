@@ -36,6 +36,7 @@ class FileLine_t{
 
 	public:
 		FileLine_t(const char *_line);
+	       ~FileLine_t();
 
 };
 
@@ -55,6 +56,9 @@ class FileContent_t{
 
 	public:
 		FileContent_t(const char*);
+		void AddLine(const int, const char*);
+		void DeleteLine(const int);
+		void Dump();
 
 };
 

@@ -64,11 +64,11 @@ CommitState_t :: CommitState_t(){
 #endif
 
    for ( int i = 0; i < no_of_modifiedfiles; i++){
-      modifiedfiles[i].WriteFile();
+      modifiedfiles[i].WriteFile(username,useremail);
    }
 
    for ( int i = 0; i < no_of_newfiles; i++){
-      newfiles[i].WriteFile();
+      newfiles[i].WriteFile(username, useremail);
    }
 }
 /**********************************************

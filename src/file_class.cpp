@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <iostream>
+#include <time.h>
 #include "file_content.h"
 #include "file_analysis.h"
 #include "file_class.h"
@@ -63,10 +64,10 @@ void File_t :: Describe(){
       }
 }
 
-void File_t :: WriteFile(){
+void File_t :: WriteFile(const char *username, const char *useremail){
    switch (filetype){
       case NEWFILE:
-         WriteNewFile();
+         WriteNewFile(username, useremail);
          break;
 
       case MODIFIEDFILE:
@@ -75,18 +76,54 @@ void File_t :: WriteFile(){
    }
 }
 
-void File_t :: WriteNewFile(){
+void File_t :: WriteNewFile(const char* username, const char* useremail){
    cout << "File " << name << " is being modified" << endl;
 
    FileContent_t  fileContent( name );
 
-   int *tagPositions[NUMBER_OF_TAGS];
+   int *tagPosition;
 
    for ( int i = 0; i < NUMBER_OF_TAGS; i++ ){
-      
-      tagPositions[i] = checkIfTagIsPresent( &fileContent, FileTag_t(i) );
-      cout << tagPositions[i] << endl;
+//
+//    If any tag is presented, delete their associated lines
+//    ------------------------------------------------------
+      tagPosition = checkIfTagIsPresent( &fileContent, FileTag_t(i) );
+      if ( tagPosition != NULL) {
+         fileContent.DeleteLine(*tagPosition);
+      }
    }
+//
+// Introduce the labels at the beginning of the file
+// -------------------------------------------------
+   char auxstr[MAX_FILE_LEN];
+   fileContent.AddLine(0,"!");
+   fileContent.AddLine(1,"!//////////////////////////////////////////////////////");
+   fileContent.AddLine(2,"!");
+
+   strcpy(auxstr, "!   @File:    ");
+   strcat(auxstr,name); 
+   fileContent.AddLine(3,auxstr);
+
+   strcpy(auxstr, "!   @Author:  ");
+   strcat(auxstr,username);
+   strcat(auxstr," (");
+   strcat(auxstr,useremail);
+   strcat(auxstr,")");
+   fileContent.AddLine(4,auxstr);
+
+   time_t now;
+   time(&now);
+   strcpy(auxstr,"!   @Created: ");
+   strcat(auxstr,ctime(&now));
+   char* auxauxstr = strstr(auxstr,"\n");    /* ctime adds a newline */
+   auxauxstr[0] = '\0';
+   fileContent.AddLine(5,auxstr);
+   fileContent.AddLine(6,"!   @Last revision:");
+   fileContent.AddLine(7,"!");
+   fileContent.AddLine(8,"!//////////////////////////////////////////////////////");
+   fileContent.AddLine(9,"!");
+
+   fileContent.Dump();
    
 
 }

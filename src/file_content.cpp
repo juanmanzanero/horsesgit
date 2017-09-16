@@ -96,10 +96,107 @@ void FileContent_t :: Read(){
 
    current = firstLine;
    for ( int i = 0; i < no_of_lines; i++ ){
-      cout << current->line << endl;
       current = current -> nextLine;
    }
 
+}
+
+void FileContent_t :: AddLine(const int pos, const char* text){
+//
+// Create the new line
+// -------------------
+   FileLine_t *line = new FileLine_t(text);
+   FileLine_t *current;
+   FileLine_t *prev;
+
+   if ( pos == 0 ) {
+      current = firstLine;
+      firstLine = line;
+      line -> nextLine = current;
+      no_of_lines++;
+  } else if ( pos == no_of_lines - 1 ){
+      current = firstLine -> nextLine;
+      prev = firstLine;
+
+      for ( int i = 1; i < pos; i++ ){
+         current = current -> nextLine;
+         prev = prev -> nextLine;
+      } 
+      
+      prev -> nextLine = line;
+      line -> nextLine = NULL;
+      no_of_lines++;
+
+  } else {
+      current = firstLine -> nextLine;
+      prev = firstLine;
+
+      for ( int i = 1; i < pos; i++ ){
+         current = current -> nextLine;
+         prev = prev -> nextLine;
+      } 
+      
+      prev -> nextLine = line;
+      line -> nextLine = current;
+      no_of_lines++;
+   }
+}
+
+void FileContent_t :: DeleteLine(const int line){
+
+   FileLine_t *current = firstLine;
+   FileLine_t *prev = firstLine;
+
+   if ( line == 0 ){
+//
+//    Remove the head
+//    ---------------
+      firstLine = current -> nextLine;
+      no_of_lines--;
+      delete current;
+   } else if ( line == no_of_lines - 1){
+//
+//    Advance to the final line
+//    -------------------------
+      current = firstLine -> nextLine;
+      for ( int i = 1; i < no_of_lines-1; i++ ){
+         current = current -> nextLine;
+         prev = prev -> nextLine;
+      }
+//
+//    Remove the line
+//    ---------------
+      no_of_lines--;
+      prev -> nextLine = NULL;
+      delete current; 
+
+   } else {
+//
+//    Advance to the requested line
+//    -----------------------------
+      current = firstLine -> nextLine;
+      for ( int i = 1; i < line; i++ ){
+         current = current -> nextLine;
+         prev = prev -> nextLine;
+      }
+//
+//    Remove the line
+//    ---------------
+      prev -> nextLine = current -> nextLine;
+      no_of_lines--;
+      delete current;         
+   }
+}
+
+void FileContent_t :: Dump(){
+   
+   FileLine_t *current;
+
+   current = firstLine;
+   for ( int i = 0; i < no_of_lines; i++){
+      cout << current -> line << endl;
+      current = current->nextLine;
+   }
 }
 
 
@@ -116,4 +213,9 @@ FileLine_t :: FileLine_t(const char *_line){
 // ---------------------------------
    nextLine = NULL;
 
+}
+
+FileLine_t :: ~FileLine_t(){
+   line[0] = '\0';
+   nextLine = NULL;
 }
