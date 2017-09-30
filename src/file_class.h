@@ -24,18 +24,22 @@ const int MAX_FILE_LEN = 2048;
 
 class File_t{
 
+/* Properties */
    public:
       enum Filetype_t{ NEWFILE, MODIFIEDFILE };
       const static char* file_formats[]; //= {".f90",".incf"};
       const static int no_of_file_formats;
+      char *fileName;
 
    private:
       char name[MAX_FILE_LEN];
       Filetype_t filetype;
        
+/* Methods */
    public:
       File_t();
       File_t(const char*, const Filetype_t);
+      File_t& operator=(const File_t& other);
       void Describe();
       void WriteFile(const char*, const char*);
       void WriteNewFile(const char*, const char*);

@@ -21,6 +21,7 @@
 #define __STRING_UTILS_H__
 
 void string_trim(char*);
+char* removePath(char*);
 
 
 #endif /*  __STRING_UTILS_H__   */

@@ -189,12 +189,16 @@ void FileContent_t :: DeleteLine(const int line){
 }
 
 void FileContent_t :: Dump(){
-   
-   FileLine_t *current;
-
-   current = firstLine;
+//
+// Open the source code file: Option "w" discard all previous contents
+// -------------------------
+   FILE *fID = fopen(name,"w");   
+//
+// Loop the linked list
+// --------------------
+   FileLine_t *current = firstLine;
    for ( int i = 0; i < no_of_lines; i++){
-      cout << current -> line << endl;
+      fprintf(fID,"%s\n",current->line);
       current = current->nextLine;
    }
 }

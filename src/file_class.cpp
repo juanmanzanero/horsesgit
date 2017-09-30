@@ -21,6 +21,7 @@
 #include <string.h>
 #include <iostream>
 #include <time.h>
+#include "string_utils.h"
 #include "file_content.h"
 #include "file_analysis.h"
 #include "file_class.h"
@@ -44,6 +45,10 @@ File_t::File_t(const char* _name, const Filetype_t _type){
 // -----------------
    strcpy( name, _name );
 //
+// Get the file name
+// -----------------
+   fileName = removePath(&name[0]);
+//
 // Get the file type
 // -----------------
    filetype = _type;
@@ -52,6 +57,7 @@ File_t::File_t(const char* _name, const Filetype_t _type){
 void File_t :: Describe(){
       cout << "File \"" ; 
       cout << name << "\"";
+//      cout << fileName ;
    
       switch (filetype) { 
          case NEWFILE: 
@@ -62,6 +68,22 @@ void File_t :: Describe(){
               cout << " is modified file." << endl;
               break;
       }
+}
+/****************************************************************
+*  Copy constructor
+****************************************************************/
+File_t& File_t :: operator=(const File_t& other)
+{
+/*  Copy the name   */
+    strcpy(name, other.name);
+
+/*  Point to the local file name */
+    fileName = &name[0] + (other.fileName - &other.name[0]);
+
+/*  Get the file type */
+    filetype = other.filetype;
+
+    return *this;
 }
 
 void File_t :: WriteFile(const char *username, const char *useremail){
@@ -77,7 +99,6 @@ void File_t :: WriteFile(const char *username, const char *useremail){
 }
 
 void File_t :: WriteNewFile(const char* username, const char* useremail){
-   cout << "File " << name << " is being modified" << endl;
 
    FileContent_t  fileContent( name );
 
@@ -101,8 +122,9 @@ void File_t :: WriteNewFile(const char* username, const char* useremail){
    fileContent.AddLine(2,"!");
 
    strcpy(auxstr, "!   @File:    ");
-   strcat(auxstr,name); 
+   strcat(auxstr,fileName); 
    fileContent.AddLine(3,auxstr);
+   cout << fileName << endl;
 
    strcpy(auxstr, "!   @Author:  ");
    strcat(auxstr,username);
@@ -129,6 +151,19 @@ void File_t :: WriteNewFile(const char* username, const char* useremail){
 }
 
 void File_t :: WriteModifiedFile(){
-   cout << "File " << name << " is being modified" << endl;
+   
+   FileContent_t fileContent( name );
+
+   int *lastRevisionTagPosition;
+
+   lastRevisionTagPosition = checkIfTagIsPresent( &fileContent, LASTREVISIONTAG );
+
+   if ( lastRevisionTagPosition != NULL ){
+      cout << "Last revision tag is present in file " << fileName << endl;
+      fileContent.DeleteLine(*lastRevisionTagPosition);
+      fileContent.AddLine(*lastRevisionTagPosition,"! @Last revision: Holaaa!");
+      fileContent.Dump();
+   }
+
 }
       

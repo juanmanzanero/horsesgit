@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string.h>
 #include "string_utils.h"
+using namespace std;
 
 
 void string_trim(char* str){
@@ -31,5 +32,24 @@ void string_trim(char* str){
 	aux = strstr(str, " ");
 	std :: cout << aux << std :: endl;
 	aux[0] = '\0';
+
+}
+
+
+char* removePath( char *name ){
+//
+// Create variables
+// ----------------
+   char *fileName;
+//
+// Find the last forward slash entry
+// ---------------------------------
+   fileName = strrchr(name, '/');
+
+   if ( fileName == NULL ) fileName = name;
+   else fileName = fileName + 1 ;
+   
+
+   return fileName;
 
 }

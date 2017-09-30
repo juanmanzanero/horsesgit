@@ -36,7 +36,7 @@ class FileLine_t{
 
 	public:
 		FileLine_t(const char *_line);
-	       ~FileLine_t();
+       ~FileLine_t();
 
 };
 
