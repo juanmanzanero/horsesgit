@@ -67,23 +67,6 @@ int git_command(int argc, const char* argv[]){
 
 
 bool IsCommitMessage(const int argc, const char* argv[]){
-
-//	Check if the arguments number is 4: git commit -m "Message"
-//	-----------------------------------------------------------
-	if ( argc != 4 ) return false;
-//
-//	If does, check if the second argument is commit
-//	-----------------------------------------------
-	if ( strcmp(argv[1],"commit") ) return false;
-//
-// 	If does, check if the third argument is "-m"
-//	--------------------------------------------
-	if ( strcmp(argv[2], "-m") ) return false;
-//
-//	If does, it is a commit message
-//	-------------------------------
-#ifdef _DEBUG
-	cout << "This is a commit message" << endl;
-#endif
-	return true;
+   if ( strcmp(argv[1], "commit") == 0 ) return true;
+   else return false;
 }
