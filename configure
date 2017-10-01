@@ -1,0 +1,6 @@
+#!/bin/bash
+INSTALL_DIR=/usr/local/bin
+
+cp -f Makefile.in Makefile
+sed -i -e "s#@HORSESGIT_HOME_DIR#$PWD#g" ./Makefile
+sed -i -e "s#@HORSESGIT_INSTALL_DIR#$INSTALL_DIR#g" ./Makefile

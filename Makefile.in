@@ -31,7 +31,8 @@ SRCDIR=./src
 INCDIR=./include
 BUILDDIR=./build
 BINDIR=./bin
-HOME_DIR=$(PWD)
+HOME_DIR=@HORSESGIT_HOME_DIR
+INSTALL_DIR=@HORSESGIT_INSTALL_DIR
 
 ##################################################
 # 3)	Define compiler flags
@@ -142,8 +143,8 @@ allclean: FORCE clean
 
 
 install: FORCE
-	sudo rm -f /usr/local/bin/horsesgit
-	sudo ln -s $(HOME_DIR)/bin/horsesgit /usr/local/bin/
+	rm -f $(INSTALL_DIR)/horsesgit
+	ln -s $(HOME_DIR)/bin/horsesgit $(INSTALL_DIR)
 
 # Dummy target to force a rule execution
 FORCE:
