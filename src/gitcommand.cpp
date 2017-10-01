@@ -65,8 +65,8 @@ int git_command(int argc, const char* argv[]){
 
 }
 
-
 bool IsCommitMessage(const int argc, const char* argv[]){
+   if ( argc == 1 ) return false;
    if ( strcmp(argv[1], "commit") == 0 ) return true;
    else return false;
 }

@@ -31,6 +31,7 @@ SRCDIR=./src
 INCDIR=./include
 BUILDDIR=./build
 BINDIR=./bin
+HOME_DIR=$(PWD)
 
 ##################################################
 # 3)	Define compiler flags
@@ -138,6 +139,11 @@ clean: FORCE
 allclean: FORCE clean
 	@echo "Cleaning " $(BINDIR)/$(PROG)
 	@rm -f $(BINDIR)/$(PROG)
+
+
+install: FORCE
+	sudo rm -f /usr/local/bin/horsesgit
+	sudo ln -s $(HOME_DIR)/bin/horsesgit /usr/local/bin/
 
 # Dummy target to force a rule execution
 FORCE:
