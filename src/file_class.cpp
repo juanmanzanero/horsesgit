@@ -86,19 +86,20 @@ File_t& File_t :: operator=(const File_t& other)
     return *this;
 }
 
-void File_t :: WriteFile(const char *username, const char *useremail){
+int File_t :: WriteFile(const char *username, const char *useremail, const char* commitsha){
+
    switch (filetype){
       case NEWFILE:
-         WriteNewFile(username, useremail);
+         return WriteNewFile(username, useremail);
          break;
 
       case MODIFIEDFILE:
-         WriteModifiedFile();
+         return WriteModifiedFile(username, useremail, commitsha);
          break;
    }
 }
 
-void File_t :: WriteNewFile(const char* username, const char* useremail){
+int File_t :: WriteNewFile(const char* username, const char* useremail){
 
    FileContent_t  fileContent( name );
 
@@ -124,7 +125,6 @@ void File_t :: WriteNewFile(const char* username, const char* useremail){
    strcpy(auxstr, "!   @File:    ");
    strcat(auxstr,fileName); 
    fileContent.AddLine(3,auxstr);
-   cout << fileName << endl;
 
    strcpy(auxstr, "!   @Author:  ");
    strcat(auxstr,username);
@@ -140,29 +140,143 @@ void File_t :: WriteNewFile(const char* username, const char* useremail){
    char* auxauxstr = strstr(auxstr,"\n");    /* ctime adds a newline */
    auxauxstr[0] = '\0';
    fileContent.AddLine(5,auxstr);
-   fileContent.AddLine(6,"!   @Last revision:");
-   fileContent.AddLine(7,"!");
-   fileContent.AddLine(8,"!//////////////////////////////////////////////////////");
+   fileContent.AddLine(6,"!   @Last revision date:");
+   fileContent.AddLine(7,"!   @Last revision author:");
+   fileContent.AddLine(8,"!   @Last revision commit:");
    fileContent.AddLine(9,"!");
+   fileContent.AddLine(10,"!//////////////////////////////////////////////////////");
+   fileContent.AddLine(11,"!");
 
    fileContent.Dump();
-   
 
+#ifdef SECURE_MODE
+   return AskConfirmation();
+#else
+   return CONTINUE;
+#endif
+   
 }
 
-void File_t :: WriteModifiedFile(){
+int File_t :: WriteModifiedFile(const char* username, const char* useremail, const char* commitsha){
+
    
    FileContent_t fileContent( name );
 
-   int *lastRevisionTagPosition;
+   int *lastRevisionDateTagPosition;
 
-   lastRevisionTagPosition = checkIfTagIsPresent( &fileContent, LASTREVISIONTAG );
+   lastRevisionDateTagPosition = checkIfTagIsPresent( &fileContent, LASTREVISIONDATETAG );
 
-   if ( lastRevisionTagPosition != NULL ){
-      cout << "Last revision tag is present in file " << fileName << endl;
-      fileContent.DeleteLine(*lastRevisionTagPosition);
-      fileContent.AddLine(*lastRevisionTagPosition,"! @Last revision: Holaaa!");
-      fileContent.Dump();
+   if ( lastRevisionDateTagPosition != NULL ){
+//   
+//    Remove the last revision current line
+//    -------------------------------------
+      fileContent.DeleteLine(*lastRevisionDateTagPosition);
+//   
+//    Create the new last revision line content
+//    -----------------------------------------
+      char auxstr[MAX_FILE_LEN];
+      strcpy(auxstr,"!   @Last revision date: ");
+//   
+//    Append the date
+//    ---------------
+      time_t now;
+      time(&now);
+      strcat(auxstr,ctime(&now));
+      char* auxauxstr = strstr(auxstr,"\n");
+      auxauxstr[0] = '\0';
+//
+//    Insert the line
+//    ---------------
+      fileContent.AddLine(*lastRevisionDateTagPosition,auxstr);
+   }
+
+   int *lastRevisionAuthorTagPosition;
+
+   lastRevisionAuthorTagPosition = checkIfTagIsPresent( &fileContent, LASTREVISIONAUTHORTAG);
+
+   if ( lastRevisionAuthorTagPosition != NULL ){
+//
+//    Remove last revision author line
+//    --------------------------------
+      fileContent.DeleteLine(*lastRevisionAuthorTagPosition);
+//
+//    Create the new last revision author content
+//    -------------------------------------------
+      char auxstr[MAX_FILE_LEN];
+      strcpy( auxstr, "!   @Last revision author: ");
+//
+//    Append author data
+//    ------------------
+      strcat(auxstr,username);
+      strcat(auxstr," (");
+      strcat(auxstr,useremail);
+      strcat(auxstr,")");
+//
+//    Insert the line
+//    ---------------
+      fileContent.AddLine(*lastRevisionAuthorTagPosition, auxstr);
+   }
+
+   int *lastRevisionCommitTagPosition;
+
+   lastRevisionCommitTagPosition = checkIfTagIsPresent( &fileContent, LASTREVISIONCOMMITTAG);
+
+   if ( lastRevisionCommitTagPosition != NULL ){
+//
+//    Remove last revision commit line
+//    --------------------------------
+      fileContent.DeleteLine(*lastRevisionCommitTagPosition);
+//
+//    Create the last revision commit content
+//    ---------------------------------------
+      char auxstr[MAX_LINE_LEN];
+      strcpy(auxstr,"!   @Last revision commit: ");
+//
+//    Append commit info
+//    ------------------
+      strcat(auxstr, commitsha);
+//
+//    Insert the line
+//    ---------------
+      fileContent.AddLine(*lastRevisionCommitTagPosition, auxstr);
+   }
+
+   fileContent.Dump();
+
+#ifdef SECURE_MODE
+   return AskConfirmation();
+#else
+   return CONTINUE;
+#endif
+
+
+}
+
+int File_t :: AskConfirmation(){
+
+   cout << "Showing modifications for file " << name << ":" << endl << endl;
+   
+   char command[MAX_LINE_LEN];
+   strcpy(command, "git diff ./");
+   strcat(command, name);
+
+   system(command);
+
+// Prompt for confirmation
+// -----------------------
+   cout << "Choose yes/no to confirm changes: ";
+   string confirm;
+   cin >> confirm;
+
+   if ( strcmp(confirm.c_str(),"yes") == 0 ){
+      strcpy(command, "git add ./");
+      strcat(command, name);
+      system(command);
+      return CONTINUE;
+
+   }else{
+      return ABORT;
+
    }
 
 }

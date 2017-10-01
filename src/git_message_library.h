@@ -29,5 +29,6 @@
 #define GIT_MODIFIEDFILE_MSG "modified:   "
 #define GIT_USERNAME "git config user.name"
 #define GIT_USEREMAIL "git config user.email"
+#define GIT_COMMITSHA "git log -1"
 
 #endif 	/* __GIT_MESSAGE_LIBRARY_H__ */

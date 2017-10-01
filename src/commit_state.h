@@ -40,15 +40,17 @@ class CommitState_t{
 		int no_of_modifiedfiles;
 		static char* getBranch(const SystemCall_t&);
       void GetUserData();
+      void GetCommitSHA();
 		void getFileNames(const SystemCall_t&, int *, char (*&)[MAX_BUFFER_SIZE], \
                                              int *, char (*&)[MAX_BUFFER_SIZE]);
       void Analysis(const char (*)[MAX_BUFFER_SIZE], const char(*)[MAX_BUFFER_SIZE]);
 
 	public:
-		CommitState_t();
+		CommitState_t(int&);
 		char *branch;
       char username[MAX_COMMITSTATE_LEN];
       char useremail[MAX_COMMITSTATE_LEN];
+      char commitsha[MAX_COMMITSTATE_LEN];
 
 
 };

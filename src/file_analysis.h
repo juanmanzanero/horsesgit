@@ -22,12 +22,16 @@
 
 #include "file_content.h"
 
-enum FileTag_t { FILETAG, AUTHORTAG, CREATEDTAG, LASTREVISIONTAG, NUMBER_OF_TAGS };
+enum FileTag_t { FILETAG, AUTHORTAG, CREATEDTAG, \
+                LASTREVISIONDATETAG, LASTREVISIONAUTHORTAG, \
+                LASTREVISIONCOMMITTAG, NUMBER_OF_TAGS };
 
 const static char FileTag[]="@File:";
 const static char AuthorTag[]="@Author:";
 const static char CreatedTag[]="@Created:";
-const static char LastRevisionTag[]="@Last revision:";
+const static char LastRevisionDateTag[]="@Last revision date:";
+const static char LastRevisionAuthorTag[]="@Last revision author:";
+const static char LastRevisionCommitTag[]="@Last revision commit:";
 const static char COMMENT_TAG[] = "!";
 
 int* checkIfTagIsPresent(FileContent_t*, const FileTag_t);

@@ -25,7 +25,7 @@
 /**************************************************
 *     Commit State constructor                    *
 **************************************************/
-CommitState_t :: CommitState_t(){
+CommitState_t :: CommitState_t(int& exit_code){
 //
 // Inquire git status
 // ------------------
@@ -34,6 +34,10 @@ CommitState_t :: CommitState_t(){
 // Extract the user information
 // ----------------------------
    GetUserData();
+//
+// Get the current commit SHA1
+// ---------------------------
+   GetCommitSHA();
 //
 // Extract the branch
 // ------------------
@@ -64,11 +68,16 @@ CommitState_t :: CommitState_t(){
 #endif
 
    for ( int i = 0; i < no_of_modifiedfiles; i++){
-      modifiedfiles[i].WriteFile(username,useremail);
+      exit_code = modifiedfiles[i].WriteFile(username,useremail,commitsha);
+
+      if ( exit_code == File_t :: ABORT ) return;
+
    }
 
    for ( int i = 0; i < no_of_newfiles; i++){
-      newfiles[i].WriteFile(username, useremail);
+      exit_code = newfiles[i].WriteFile(username, useremail, commitsha);
+   
+      if ( exit_code == File_t :: ABORT ) return;
    }
 }
 /**********************************************
@@ -89,6 +98,21 @@ void CommitState_t :: GetUserData(){
    strcpy( useremail, line );
   
 }
+
+void CommitState_t :: GetCommitSHA(){
+//
+// Call git to inquire the commit sha
+// ----------------------------------
+   SystemCall_t gitlog( GIT_COMMITSHA ) ; 
+
+   char *line = gitlog.Get_output_line(0);
+   strcpy( commitsha, line );
+
+   char *auxstr = strstr(commitsha, " ") + 1;
+
+   strcpy(commitsha, auxstr);
+}
+
 
 /**********************************************
 *     This function gets the branch name      *
@@ -209,6 +233,7 @@ void CommitState_t :: Analysis(const char (*new_files)[MAX_BUFFER_SIZE], \
    cout << "User name: " << username << endl;
    cout << "User email: " << useremail << endl;
 	cout << "The branch is \"" << branch << "\"." << endl;
+   cout << "Current commit is " << commitsha << "." << endl;
 
    cout << endl;
 	cout << "Number of new files: " << no_of_newfiles << endl;

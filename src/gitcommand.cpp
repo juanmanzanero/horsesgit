@@ -24,6 +24,7 @@
 #include <string.h>
 #include "gitcommand.h"
 #include "commit_state.h"
+#include "file_class.h"
 
 using namespace std;
 
@@ -42,13 +43,26 @@ int git_command(int argc, const char* argv[]){
 	}
 
 /*	Otherwise, get the status of the code     */
-	CommitState_t commitState;
+   int exit_code;
+	CommitState_t commitState(exit_code);
 
+   if ( exit_code == File_t :: CONTINUE ){   
+      char commitmsg[512];
+      strcpy(commitmsg,"git ");
+      for (int i = 1; i < argc; i++){
+         strcat(commitmsg," ");
+         strcat(commitmsg,argv[i]);
+      }
 
-//
-// Return exit code
-// ----------------
-   return 0;
+      system(commitmsg);
+      return 0;
+
+   }else if ( exit_code == File_t :: ABORT ){
+      cout << "ABORTED." << endl;
+      return 0;
+
+   }
+
 }
 
 

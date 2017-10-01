@@ -83,8 +83,16 @@ const char* getTagFromID(const FileTag_t tagID){
             tag = CreatedTag;
             break;
 
-         case(LASTREVISIONTAG):
-            tag = LastRevisionTag;
+         case(LASTREVISIONDATETAG):
+            tag = LastRevisionDateTag;
+            break;
+
+         case(LASTREVISIONAUTHORTAG):
+            tag = LastRevisionAuthorTag;
+            break;
+
+         case(LASTREVISIONCOMMITTAG):
+            tag = LastRevisionCommitTag; 
             break;
 
          case(NUMBER_OF_TAGS):

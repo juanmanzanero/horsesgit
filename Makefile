@@ -35,16 +35,16 @@ BINDIR=./bin
 ##################################################
 # 3)	Define compiler flags
 ##################################################
-MODE?=DEBUG
+MODE?=RELEASE
 GCC_FLAGS_DEBUG=-g -O -ggdb -D_GCC -D_DEBUG
-GCC_FLAGS_RELEASE=-O3 -D_GCC -D_RELEASE
+GCC_FLAGS_RELEASE=-g -ggdb -O -D_GCC -D_RELEASE
 ICC_FLAGS_DEBUG=-g -O -D_ICC -D_DEBUG
-ICC_FLAGS_RELEASE=-O3 -xHost -ip -D_ICC -D_DEBUG
+ICC_FLAGS_RELEASE=-g -O -D_ICC -D_DEBUG
 
 ##################################################
 # 4)	Define extra flags
 ##################################################
-FLAGS=
+FLAGS=-DSECURE_MODE
 -include make.inc
 
 

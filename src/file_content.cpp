@@ -201,6 +201,8 @@ void FileContent_t :: Dump(){
       fprintf(fID,"%s\n",current->line);
       current = current->nextLine;
    }
+
+   fclose(fID);
 }
 
 
